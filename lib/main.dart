@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
+
+final counterProvider = StateProvider((ref) => 0);
+
 
 class MyApp extends StatelessWidget {
 
@@ -13,34 +18,19 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomeWithProvider(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
+class MyHomeWithProvider extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final int count = useProvider(counterProvider).state;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('Riverpod Introduction'),
+        centerTitle: true,
       ),
       body: Center(
         child: Column(
@@ -50,14 +40,16 @@ class _MyHomePageState extends State<MyHomePage> {
               'You have pushed the button this many times:',
             ),
             Text(
-              '$_counter',
+              '$count',
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () {
+          context.read(counterProvider).state++;
+        },
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ),
